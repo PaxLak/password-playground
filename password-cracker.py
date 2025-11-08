@@ -1,6 +1,7 @@
 # password-cracker.py
 
 #imports
+import csv
 import random
 import string
 from os import system, name
@@ -21,19 +22,21 @@ else:
 
 #time prediction
 try:
-    txtlog = open("log.txt", 'a+')
-    txtlog.seek(0)
-    last_ten_numbers = [float(line) for line in txtlog.readlines()[-10:]]
-
-        # Calculate and return the average of the last 10 numbers
+    logcsv = open("log.csv", 'a+', newline='')
+    logcsv.seek(0)
+    reader = list(csv.reader(logcsv))
+    last_ten_numbers = []
+    if reader and reader[-1]:
+        last_ten_numbers = [float(item) for item in reader[-1][-10:]]
+    # Calculate and return the average of the last 10 numbers
     if last_ten_numbers:
         avg_aps = sum(last_ten_numbers) / len(last_ten_numbers)
         print(f"Estimated max time: {((len(chars)**len(correct_password))/avg_aps):.2f}s")
     else:
         print("No previous log entries found. Cannot estimate max time.")
 
-except:
-    print("Error estimating time")
+except Exception as e:
+    print(f"Error estimating time: {e}")
 
 input("Enter to continue\n")  #pause
 
@@ -51,14 +54,16 @@ while not found:
 
     print("\b"*len(correct_password) + f"\033[1;34m{attempt}\033[0m", end='') #print attempt
 
-    if attempt == correct_password:
+    if attempt == correct_password:  #check if correct
         found = True
         elapsed_time = time.time() - start_time
         aps = i/elapsed_time
-        txtlog.write(f"{aps}\n")
+        csv.writer(logcsv).writerow([f"{aps:.2f}"])
+        logcsv.flush()
         print(f"\n\ntime taken: \033[1;32m{elapsed_time:.2f}s\033[0m")
         print(f"total attempts: \033[1;32m{i}\033[0m")
         print(f"Average attempts per second: \033[1;32m{aps:.2f}\033[0m")
 
     i += 1
 
+logcsv.close()
