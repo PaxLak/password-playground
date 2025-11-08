@@ -43,6 +43,8 @@ input("Enter to continue\n")  #pause
 #main loop setup
 system('cls' if name == 'nt' else 'clear')
 print(f"Password is: \033[1;32m{correct_password}\033[0m")    #print correct password
+
+seed = random.random()
 found = False
 i = 0
 start_time = time.time()
@@ -50,7 +52,7 @@ print(f"Trying password: " + "#" * len(correct_password), end='')
 
 #main loop
 while not found:
-    attempt = ''.join(random.Random(i).choices(chars, k=len(correct_password)))   #generate attempt
+    attempt = ''.join(random.Random(seed + i).choices(chars, k=len(correct_password)))   #generate attempt
 
     print("\b"*len(correct_password) + f"\033[1;34m{attempt}\033[0m", end='') #print attempt
 
